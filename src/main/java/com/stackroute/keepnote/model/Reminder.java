@@ -3,6 +3,14 @@ package com.stackroute.keepnote.model;
 import java.util.Date;
 import java.util.List;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /*
  * The class "Reminder" will be acting as the data model for the Reminder Table in the database. 
  * Please note that this class is annotated with @Entity annotation. 
@@ -10,7 +18,7 @@ import java.util.List;
  * If it finds any, then it will begin the process of looking through that particular 
  * Java object to recreate it as a table in your database.
  */
-
+@Entity
 public class Reminder {
 	/*
 	 * This class should have seven fields
@@ -23,50 +31,211 @@ public class Reminder {
 	 * always initialized with the system date. annotate notes field with @OneToMany
 	 * and @JsonIgnore
 	 */
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)	
+	private int reminderId;
+	
+	private String reminderName;
+	private String reminderDescription;
+	private String reminderType;
+	private String reminderCreatedBy;
+	
+	@OneToMany
+	@JsonIgnore
+	private List<Note> notes;
+	private Date reminderCreationDate;
+	
 
+	
 	public Reminder() {
 
 	}
+	
 
-	public Reminder(int Int, String string, String string1, String string2, String string3, List<Note> list,
-			Date date) {
+
+
+	public Reminder(int reminderId, String reminderName, String reminderDescription, String reminderType,
+			String reminderCreatedBy, List<Note> notes, Date reminderCreationDate) {
+		super();
+		this.reminderId = reminderId;
+		this.reminderName = reminderName;
+		this.reminderDescription = reminderDescription;
+		this.reminderType = reminderType;
+		this.reminderCreatedBy = reminderCreatedBy;
+		this.notes = notes;
+		this.reminderCreationDate = reminderCreationDate;
 	}
+
+
+
 
 	public int getReminderId() {
-		return 0;
-
+		return reminderId;
 	}
 
-	public void setReminderId(int Int) {
 
+
+
+	public void setReminderId(int reminderId) {
+		this.reminderId = reminderId;
 	}
 
-	public void setReminderName(String string) {
 
+
+
+	public String getReminderName() {
+		return reminderName;
 	}
+
+
+
+
+	public void setReminderName(String reminderName) {
+		this.reminderName = reminderName;
+	}
+
+
+
 
 	public String getReminderDescription() {
-		return null;
+		return reminderDescription;
 	}
 
-	public void setReminderDescription(String string) {
 
+
+
+	public void setReminderDescription(String reminderDescription) {
+		this.reminderDescription = reminderDescription;
 	}
 
-	public void setReminderType(String string) {
 
+
+
+	public String getReminderType() {
+		return reminderType;
 	}
 
-	public void setReminderCreationDate(Date date) {
 
+
+
+	public void setReminderType(String reminderType) {
+		this.reminderType = reminderType;
 	}
 
-	public void setReminderCreatedBy(String string) {
 
+
+
+	public String getReminderCreatedBy() {
+		return reminderCreatedBy;
 	}
 
-	public void setNotes(List<Note> list) {
 
+
+
+	public void setReminderCreatedBy(String reminderCreatedBy) {
+		this.reminderCreatedBy = reminderCreatedBy;
 	}
 
-}
+
+
+
+	public List<Note> getNotes() {
+		return notes;
+	}
+
+
+
+
+	public void setNotes(List<Note> notes) {
+		this.notes = notes;
+	}
+
+
+
+
+	public Date getReminderCreationDate() {
+		return reminderCreationDate;
+	}
+
+
+
+
+	public void setReminderCreationDate(Date reminderCreationDate) {
+		this.reminderCreationDate = reminderCreationDate;
+	}
+
+
+
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((notes == null) ? 0 : notes.hashCode());
+		result = prime * result + ((reminderCreatedBy == null) ? 0 : reminderCreatedBy.hashCode());
+		result = prime * result + ((reminderCreationDate == null) ? 0 : reminderCreationDate.hashCode());
+		result = prime * result + ((reminderDescription == null) ? 0 : reminderDescription.hashCode());
+		result = prime * result + reminderId;
+		result = prime * result + ((reminderName == null) ? 0 : reminderName.hashCode());
+		result = prime * result + ((reminderType == null) ? 0 : reminderType.hashCode());
+		return result;
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Reminder other = (Reminder) obj;
+		if (notes == null) {
+			if (other.notes != null)
+				return false;
+		} else if (!notes.equals(other.notes))
+			return false;
+		if (reminderCreatedBy == null) {
+			if (other.reminderCreatedBy != null)
+				return false;
+		} else if (!reminderCreatedBy.equals(other.reminderCreatedBy))
+			return false;
+		if (reminderCreationDate == null) {
+			if (other.reminderCreationDate != null)
+				return false;
+		} else if (!reminderCreationDate.equals(other.reminderCreationDate))
+			return false;
+		if (reminderDescription == null) {
+			if (other.reminderDescription != null)
+				return false;
+		} else if (!reminderDescription.equals(other.reminderDescription))
+			return false;
+		if (reminderId != other.reminderId)
+			return false;
+		if (reminderName == null) {
+			if (other.reminderName != null)
+				return false;
+		} else if (!reminderName.equals(other.reminderName))
+			return false;
+		if (reminderType == null) {
+			if (other.reminderType != null)
+				return false;
+		} else if (!reminderType.equals(other.reminderType))
+			return false;
+		return true;
+	}
+
+
+
+
+	@Override
+	public String toString() {
+		return "Reminder [reminderId=" + reminderId + ", reminderName=" + reminderName + ", reminderDescription="
+				+ reminderDescription + ", reminderType=" + reminderType + ", reminderCreatedBy=" + reminderCreatedBy
+				+ ", notes=" + notes + ", reminderCreationDate=" + reminderCreationDate + "]";
+	}
+	
+
+	}

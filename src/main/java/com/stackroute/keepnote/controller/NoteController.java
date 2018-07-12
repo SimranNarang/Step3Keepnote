@@ -1,5 +1,26 @@
 package com.stackroute.keepnote.controller;
 
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.stackroute.keepnote.exception.CategoryNotFoundException;
+import com.stackroute.keepnote.exception.NoteNotFoundException;
+import com.stackroute.keepnote.exception.ReminderNotFoundException;
+import com.stackroute.keepnote.model.Note;
+import com.stackroute.keepnote.model.Reminder;
+import com.stackroute.keepnote.model.User;
 import com.stackroute.keepnote.service.NoteService;
 
 /*
@@ -10,7 +31,7 @@ import com.stackroute.keepnote.service.NoteService;
  * format. Starting from Spring 4 and above, we can use @RestController annotation which 
  * is equivalent to using @Controller and @ResposeBody annotation
  */
-
+@RestController
 public class NoteController {
 
 	/*
@@ -18,9 +39,11 @@ public class NoteController {
 	 * autowiring) Please note that we should not create any object using the new
 	 * keyword
 	 */
+	private NoteService noteService;
 
+	@Autowired
 	public NoteController(NoteService noteService) {
-
+		this.noteService = noteService;
 	}
 
 	/*
@@ -36,6 +59,27 @@ public class NoteController {
 	 * 
 	 * This handler method should map to the URL "/note" using HTTP POST method
 	 */
+	@PostMapping("/note")
+	public ResponseEntity<?> createCategory(@RequestBody Note note, HttpSession session) {
+		ResponseEntity<?> responseEntity = null;
+		if ((String) session.getAttribute("loggedInUserId") != null) {
+
+			try {
+				boolean status = noteService.createNote(note);
+
+				if (status) {
+					responseEntity = new ResponseEntity<Note>(note, HttpStatus.CREATED);
+				} else {
+					responseEntity = new ResponseEntity<String>("Exists", HttpStatus.CONFLICT);
+				}
+			} catch (ReminderNotFoundException | CategoryNotFoundException e) {
+				responseEntity = new ResponseEntity<String>("Exists", HttpStatus.CONFLICT);
+			}
+		} else {
+			responseEntity = new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
+		}
+		return responseEntity;
+	}
 
 	/*
 	 * Define a handler method which will delete a note from a database.
@@ -49,6 +93,23 @@ public class NoteController {
 	 * This handler method should map to the URL "/note/{id}" using HTTP Delete
 	 * method" where "id" should be replaced by a valid noteId without {}
 	 */
+	@DeleteMapping(value="/note/{id}")
+	public ResponseEntity<?> deleteCategory(@PathVariable() int id, HttpSession session) {
+		ResponseEntity<?> responseEntity = null;
+		if ((String) session.getAttribute("loggedInUserId") != null) {
+			boolean status = noteService.deleteNote(id);
+			if (status) {
+				responseEntity = new ResponseEntity<String>("Deleted successfully", HttpStatus.OK);
+			} else {
+				responseEntity = new ResponseEntity<String>("Cannot delete Category please try again",
+						HttpStatus.NOT_FOUND);
+			}
+		} else {
+			responseEntity = new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
+		}
+		return responseEntity;
+	}
+
 
 	/*
 	 * Define a handler method which will update a specific note by reading the
@@ -64,6 +125,27 @@ public class NoteController {
 	 * 
 	 * This handler method should map to the URL "/note/{id}" using HTTP PUT method.
 	 */
+	@PutMapping("/note/{id}")
+	public ResponseEntity<?> updateCategory(@PathVariable() int id,@RequestBody Note note, HttpSession session) {
+		try {
+			if (session.getAttribute("loggedInUserId")==null) {
+				return new ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED);
+			}
+			Note noteUpdate = noteService.updateNote(note, id);
+			if (noteUpdate != null)
+				return new ResponseEntity<Note>(note, HttpStatus.OK);
+			else
+				return new ResponseEntity<String>("Not Found", HttpStatus.NOT_FOUND);
+
+		} catch (NullPointerException e) {
+			return new ResponseEntity<String>("Unauthorized", HttpStatus.UNAUTHORIZED);
+
+		} catch (ReminderNotFoundException | CategoryNotFoundException | NoteNotFoundException e) {
+			return new ResponseEntity<String>("Not Found", HttpStatus.NOT_FOUND);
+
+		}
+	}
+
 
 	/*
 	 * Define a handler method which will get us the notes by a userId.
@@ -76,5 +158,18 @@ public class NoteController {
 	 * 
 	 * This handler method should map to the URL "/note" using HTTP GET method
 	 */
+	@GetMapping("/note")
+	public ResponseEntity<?> getUserById(HttpSession session) {
+		ResponseEntity<?> responseEntity = null;
+		if ((String) session.getAttribute("loggedInUserId") != null) {
+			List<Note> list =noteService.getAllNotesByUserId((String)session.getAttribute("loggedInUserId"));
+			responseEntity = new ResponseEntity<List<Note>>(list,HttpStatus.OK);
+
+		} else {
+			responseEntity = new ResponseEntity<User>(HttpStatus.UNAUTHORIZED);
+		}
+		return responseEntity;
+
+	}
 
 }

@@ -2,65 +2,148 @@ package com.stackroute.keepnote.model;
 
 import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /*
- * The class "User" will be acting as the data model for the User Table in the database. 
- * Please note that this class is annotated with @Entity annotation. 
- * Hibernate will scan all package for any Java objects annotated with the @Entity annotation. 
- * If it finds any, then it will begin the process of looking through that particular 
- * Java object to recreate it as a table in your database.
- */
-
+* The class "User" will be acting as the data model for the User Table in the database.
+* Please note that this class is annotated with @Entity annotation.
+* Hibernate will scan all package for any Java objects annotated with the @Entity annotation.
+* If it finds any, then it will begin the process of looking through that particular
+* Java object to recreate it as a table in your database.
+*/
+@Entity
 public class User {
+    @Id
+    private String userId;
+    private String userName;
+    private String userPassword;
+    private String userMobile;
+    private Date userAddedDate;
 
-	/*
-	 * This class should have five fields (userId,userName,
-	 * userPassword,userMobile,userAddedDate). Out of these five fields, the field
-	 * userId should be the primary key. This class should also contain the getters
-	 * and setters for the fields, along with the no-arg , parameterized constructor
-	 * and toString method.The value of userAddedDate should not be accepted from
-	 * the user but should be always initialized with the system date
-	 */
+    /*
+     * This class should have five fields (userId,userName,
+     * userPassword,userMobile,userAddedDate). Out of these five fields, the field
+     * userId should be the primary key. This class should also contain the getters
+     * and setters for the fields, along with the no-arg , parameterized constructor
+     * and toString method.The value of userAddedDate should not be accepted from
+     * the user but should be always initialized with the system date
+     */
 
-	public User() {
+    public User() {
 
-	}
+    }
+    
+    
 
-	public User(String string, String string1, String string2, String string3, Date date) {
+    public User(String userId, String userName, String userPassword, String userMobile, Date userAddedDate) {
+        super();
+        this.userId = userId;
+        this.userName = userName;
+        this.userPassword = userPassword;
+        this.userMobile = userMobile;
+        this.userAddedDate = userAddedDate;
+    }
 
-	}
 
-	public String getUserId() {
-		return null;
-	}
 
-	public void setUserId(String string) {
+    public String getUserId() {
+        return userId;
+    }
 
-	}
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
-	public void setUserName(String string) {
+    public String getUserName() {
+        return userName;
+    }
 
-	}
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
-	public String getUserPassword() {
-		return null;
+    public String getUserPassword() {
+        return userPassword;
+    }
 
-	}
+    public void setUserPassword(String userPassword) {
+        this.userPassword = userPassword;
+    }
 
-	public void setUserPassword(String string) {
+    public String getUserMobile() {
+        return userMobile;
+    }
 
-	}
+    public void setUserMobile(String userMobile) {
+        this.userMobile = userMobile;
+    }
 
-	public String getUserMobile() {
-		return null;
+    public Date getUserAddedDate() {
+        return userAddedDate;
+    }
 
-	}
+    public void setUserAddedDate(Date userAddedDate) {
+        this.userAddedDate = userAddedDate;
+    }
 
-	public void setUserMobile(String string) {
+    @Override
+    public String toString() {
+        return "User [userId=" + userId + ", userName=" + userName + ", userPassword=" + userPassword + ", userMobile="
+                + userMobile + ", userAddedDate=" + userAddedDate + "]";
+    }
 
-	}
 
-	public void setUserAddedDate(Date date) {
 
-	}
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((userAddedDate == null) ? 0 : userAddedDate.hashCode());
+        result = prime * result + ((userId == null) ? 0 : userId.hashCode());
+        result = prime * result + ((userMobile == null) ? 0 : userMobile.hashCode());
+        result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+        result = prime * result + ((userPassword == null) ? 0 : userPassword.hashCode());
+        return result;
+    }
 
+
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        User other = (User) obj;
+        if (userAddedDate == null) {
+            if (other.userAddedDate != null)
+                return false;
+        } else if (!userAddedDate.equals(other.userAddedDate))
+            return false;
+        if (userId == null) {
+            if (other.userId != null)
+                return false;
+        } else if (!userId.equals(other.userId))
+            return false;
+        if (userMobile == null) {
+            if (other.userMobile != null)
+                return false;
+        } else if (!userMobile.equals(other.userMobile))
+            return false;
+        if (userName == null) {
+            if (other.userName != null)
+                return false;
+        } else if (!userName.equals(other.userName))
+            return false;
+        if (userPassword == null) {
+            if (other.userPassword != null)
+                return false;
+        } else if (!userPassword.equals(other.userPassword))
+            return false;
+        return true;
+    }
+    
 }

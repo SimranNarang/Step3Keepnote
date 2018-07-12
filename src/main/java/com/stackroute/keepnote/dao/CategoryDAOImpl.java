@@ -1,7 +1,15 @@
 package com.stackroute.keepnote.dao;
 
 import java.util.List;
+
+import javax.persistence.Query;
+import javax.transaction.Transactional;
+
 import org.hibernate.SessionFactory;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
 import com.stackroute.keepnote.exception.CategoryNotFoundException;
 import com.stackroute.keepnote.model.Category;
 
@@ -14,6 +22,8 @@ import com.stackroute.keepnote.model.Category;
  * 					transaction. The database transaction happens inside the scope of a persistence 
  * 					context.  
  * */
+@Repository
+@Transactional
 public class CategoryDAOImpl implements CategoryDAO {
 
 	/*
@@ -21,15 +31,21 @@ public class CategoryDAOImpl implements CategoryDAO {
 	 * constructor-based autowiring.
 	 */
 	
+	private SessionFactory sessionFactory;
+	
+	@Autowired
 	public CategoryDAOImpl(SessionFactory sessionFactory) {
-
+		this.sessionFactory = sessionFactory;
 	}
 
 	/*
 	 * Create a new category
 	 */
 	public boolean createCategory(Category category) {
-		return false;
+		
+		sessionFactory.getCurrentSession().save(category);
+		sessionFactory.getCurrentSession().flush();
+		return true;
 
 	}
 
@@ -37,7 +53,16 @@ public class CategoryDAOImpl implements CategoryDAO {
 	 * Remove an existing category
 	 */
 	public boolean deleteCategory(int categoryId) {
-		return false;
+		try{
+		sessionFactory.getCurrentSession().delete(getCategoryById(categoryId));
+		return true;
+		}
+		catch(CategoryNotFoundException exception) {
+			return false;
+		}
+		finally {
+			sessionFactory.getCurrentSession().flush();
+		}
 
 	}
 	/*
@@ -45,7 +70,10 @@ public class CategoryDAOImpl implements CategoryDAO {
 	 */
 
 	public boolean updateCategory(Category category) {
-		return false;
+		sessionFactory.getCurrentSession().clear();
+		sessionFactory.getCurrentSession().update(category);
+		sessionFactory.getCurrentSession().flush();
+		return true;
 
 	}
 	/*
@@ -53,7 +81,13 @@ public class CategoryDAOImpl implements CategoryDAO {
 	 */
 
 	public Category getCategoryById(int categoryId) throws CategoryNotFoundException {
-		return null;
+		
+		Category category = sessionFactory.getCurrentSession().get(Category.class, categoryId);
+		if(category==null) {
+			throw new CategoryNotFoundException("Category not found");
+		}
+		sessionFactory.getCurrentSession().flush();
+		return category;
 
 	}
 
@@ -61,7 +95,11 @@ public class CategoryDAOImpl implements CategoryDAO {
 	 * Retrieve details of all categories by userId
 	 */
 	public List<Category> getAllCategoryByUserId(String userId) {
-		return null;
+		String hql = "FROM Category WHERE categoryCreatedBy = :userId ";
+		Query query = sessionFactory.getCurrentSession().createQuery(hql);
+		query.setParameter("userId", userId);
+		
+		return query.getResultList();
 
 	}
 
